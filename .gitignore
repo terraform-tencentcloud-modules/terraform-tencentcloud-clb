@@ -1,0 +1,8 @@
+.idea
+.DS_Store
+.terraform
+
+*.log
+*.tfvars
+*.tfstate
+*.tfstate.backup
