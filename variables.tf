@@ -29,7 +29,7 @@ variable "network_type" {
 }
 
 variable "vpc_id" {
-  description = "VPC id of the CLB."
+  description = "VPC id of the CLB, must be same as instances' which will attached to this CLB instance."
   type        = string
   default     = null
 }
