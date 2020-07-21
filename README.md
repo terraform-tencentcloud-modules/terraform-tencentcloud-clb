@@ -34,7 +34,6 @@ This module can create clb instance.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| region | TencentCloud region to launch resources. | <invalid reflect.Value> |  | no 
 | project_id | Id of the project within the CLB instance, '0' - Default Project. | number | null | no 
 | clb_name | Name of the CLB. The name can only contain Chinese characters, English letters, numbers, underscore and hyphen '-'. | string | tf-modules-clb | no 
 | clb_tags | The available tags within this CLB. | map(string) | {} | no 

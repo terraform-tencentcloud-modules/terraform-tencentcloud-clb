@@ -1,8 +1,3 @@
-provider "tencentcloud" {
-  version = ">=1.19.0"
-  region  = var.region != "" ? var.region : null
-}
-
 resource "tencentcloud_clb_instance" "this" {
   project_id      = var.project_id
   clb_name        = var.clb_name

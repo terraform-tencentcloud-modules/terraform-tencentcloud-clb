@@ -1,9 +1,5 @@
-provider "tencentcloud" {
-  region = "ap-guangzhou"
-}
-
 module "vpc" {
-  source   = "../../../terraform-tencentcloud-vpc"
+  source = "../../../terraform-tencentcloud-vpc"
 
   vpc_name = "simple-vpc"
   vpc_cidr = "10.0.0.0/16"
@@ -29,13 +25,13 @@ module "vpc" {
 }
 
 module "clb-instance" {
-  source          = "../../../terraform-tencentcloud-clb"
+  source = "../../../terraform-tencentcloud-clb"
 
-  network_type    = "INTERNAL"
-  clb_name        = "tf-clb-module-internal"
-  vpc_id          = module.vpc.vpc_id
-  subnet_id       = module.vpc.subnet_id[0]
-  project_id      = 0
+  network_type = "INTERNAL"
+  clb_name     = "tf-clb-module-internal"
+  vpc_id       = module.vpc.vpc_id
+  subnet_id    = module.vpc.subnet_id[0]
+  project_id   = 0
 
   clb_tags = {
     test = "tf-clb-module"

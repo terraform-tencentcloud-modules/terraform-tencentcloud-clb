@@ -1,8 +1,3 @@
-variable "region" {
-  description = "TencentCloud region to launch resources."
-  default     = ""
-}
-
 variable "project_id" {
   description = "Id of the project within the CLB instance, '0' - Default Project."
   type        = number
