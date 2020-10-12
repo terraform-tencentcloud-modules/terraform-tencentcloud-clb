@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "../../../terraform-tencentcloud-vpc"
+  source = "terraform-tencentcloud-modules/vpc/tencentcloud"
 
   vpc_name = "simple-vpc"
   vpc_cidr = "10.0.0.0/16"
@@ -30,7 +30,7 @@ data "tencentcloud_security_groups" "foo" {
 }
 
 module "security_group" {
-  source = "../../../terraform-tencentcloud-security-group"
+  source = "terraform-tencentcloud-modules/security-group/tencentcloud"
 
   security_group_name        = "simple-security-group"
   security_group_description = "simple-security-group-test"
@@ -127,7 +127,7 @@ module "security_group" {
 }
 
 module "clb-instance" {
-  source = "../../../terraform-tencentcloud-clb"
+  source = "terraform-tencentcloud-modules/clb/tencentcloud"
 
   network_type    = "OPEN"
   clb_name        = "tf-clb-module-open"
