@@ -1,5 +1,13 @@
+provider "tencentcloud" {
+  region = "ap-guangzhou"
+}
+
 module "vpc" {
   source = "terraform-tencentcloud-modules/vpc/tencentcloud"
+
+  providers = {
+    tencentcloud = tencentcloud
+  }
 
   vpc_name = "simple-vpc"
   vpc_cidr = "10.0.0.0/16"
@@ -31,6 +39,10 @@ data "tencentcloud_security_groups" "foo" {
 
 module "security_group" {
   source = "terraform-tencentcloud-modules/security-group/tencentcloud"
+
+  providers = {
+    tencentcloud = tencentcloud
+  }
 
   security_group_name        = "simple-security-group"
   security_group_description = "simple-security-group-test"
@@ -128,6 +140,10 @@ module "security_group" {
 
 module "clb-instance" {
   source = "terraform-tencentcloud-modules/clb/tencentcloud"
+
+  providers = {
+    tencentcloud = tencentcloud
+  }
 
   network_type    = "OPEN"
   clb_name        = "tf-clb-module-open"

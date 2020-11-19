@@ -1,5 +1,13 @@
+provider "tencentcloud" {
+  region = "ap-guangzhou"
+}
+
 module "vpc" {
   source = "terraform-tencentcloud-modules/vpc/tencentcloud"
+
+  providers = {
+    tencentcloud = tencentcloud
+  }
 
   vpc_name = "simple-vpc"
   vpc_cidr = "10.0.0.0/16"
@@ -26,6 +34,10 @@ module "vpc" {
 
 module "clb-instance" {
   source = "terraform-tencentcloud-modules/clb/tencentcloud"
+
+  providers = {
+    tencentcloud = tencentcloud
+  }
 
   network_type = "INTERNAL"
   clb_name     = "tf-clb-module-internal"

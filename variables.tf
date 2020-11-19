@@ -1,3 +1,9 @@
+variable "region" {
+  description = "TencentCloud region to launch resources."
+  type        = string
+  default     = "ap-guangzhou"
+}
+
 variable "project_id" {
   description = "Id of the project within the CLB instance, '0' - Default Project."
   type        = number
@@ -20,7 +26,7 @@ variable "clb_tags" {
 variable "network_type" {
   description = "Type of CLB instance, and available values include 'OPEN' and 'INTERNAL'."
   type        = string
-  default     = null
+  default     = "OPEN"
 }
 
 variable "vpc_id" {
