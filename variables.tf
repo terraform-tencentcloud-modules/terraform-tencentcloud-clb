@@ -40,3 +40,57 @@ variable "security_groups" {
   type        = list(string)
   default     = null
 }
+
+variable "clb_log_set_period" {
+  type        = number
+  default     = 7
+  description = "Logset retention period in days. Maximun value is 90."
+}
+
+variable "clb_log_topic_name" {
+  type        = string
+  default     = "clb_topic"
+  description = "Log topic of CLB instance."
+}
+
+variable "log_set_id" {
+  type        = string
+  default     = ""
+  description = "The id of log set."
+}
+
+variable "log_topic_id" {
+  type        = string
+  default     = ""
+  description = "The id of log topic."
+}
+
+variable "create_listener" {
+  type        = bool
+  default     = true
+  description = "Whether to create a CLB Listener."
+}
+
+variable "clb_listeners" {
+  type        = list(object({
+    listener_name = string
+    port          = number
+    protocol      = string
+    listener_domain = string
+    listener_url    = string
+    clb_health_check = object({
+      health_check_switch        = bool
+      health_check_interval_time = number
+      health_check_health_num    = number
+      health_check_unhealth_num  = number
+
+      health_check_http_code     = number
+      health_check_http_method   = string
+    })
+    session_expire_time        = number
+  }))
+  default     = []
+  description = "The CLB Listener config list."
+}
+
+
