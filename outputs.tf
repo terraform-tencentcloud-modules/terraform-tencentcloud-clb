@@ -52,3 +52,16 @@ output "tags" {
   description = "The available tags within this CLB."
   value       = length(local.this_clb_info) > 0 ? merge(local.this_clb_info[0].tags, {}) : {}
 }
+
+output "clb_log_set_id" {
+  value       = var.log_set_id == "" ? "${tencentcloud_clb_log_set.set[0].id}" : var.log_set_id
+  description = "The id of log set."
+}
+output "clb_log_topic_id" {
+  value       = var.log_topic_id == "" ? "${tencentcloud_clb_log_topic.topic[0].id}" : var.log_topic_id
+  description = "The id of log topic."
+}
+output "clb_listener_id" {
+  value       = tencentcloud_clb_listener.HTTP_listener.*.listener_id
+  description = "ID of the listener."
+} 
