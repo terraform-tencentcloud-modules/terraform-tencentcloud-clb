@@ -9,84 +9,58 @@ The following resources are included.
 * [CLB](https://www.terraform.io/docs/providers/tencentcloud/r/clb_instance.html)
 * [CLB Listener](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/clb_listener)
 * [CLB Listener Rule](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/clb_listener_rule)
+* [CLB_Redirection](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/clb_redirection)
 * [CLB Log Set](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/clb_log_set)
 * [CLB Log Topic](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/clb_log_topic)
 
 ## Usage
 
-There are tow ways to create clb using this module:
+There are some ways to create clb using this module:
 
-1. Simple clb instance
-2. Clb instance with HTTP listener and log
+1. [Specifying listeners (HTTP, HTTPS, TCP, TCP_SSL, etc.)](https://github.com/terraform-tencentcloud-modules/terraform-tencentcloud-clb#CLB-Module-With-Listeners)
+2. [Specifying Listeners Redirection](https://github.com/terraform-tencentcloud-modules/terraform-tencentcloud-clb#CLB-Module-Listeners-Redirection)
+3. [Specifying Log](https://github.com/terraform-tencentcloud-modules/terraform-tencentcloud-clb#CLB-Instance-With-Log)
 
-### Simple clb instance
-
-```hcl
-module "clb-instance" {
-  source          = "terraform-tencentcloud-modules/clb/tencentcloud"
-
-  network_type    = "OPEN"
-  clb_name        = "tf-clb-module-open"
-  vpc_id          = module.vpc.vpc_id
-  project_id      = 0
-  security_groups = [module.security_group.security_group_id]
-
-  clb_tags = {
-    test = "tf-clb-module"
-  }
-}
-```
-
-### Clb instance with HTTP listener and log
+### CLB Module With Listeners
 
 ```hcl
-module "clb-instance" {
+module "clb-instance-with-listeners" {
   source = "terraform-tencentcloud-modules/clb/tencentcloud"
 
   network_type    = "OPEN"
-  clb_name        = "tf-clb-module-open"
-  vpc_id          = "vpc-id-123"
+  clb_name        = "tf-clb-module-with-listener"
+  vpc_id          = "your_vpc_id"
   project_id      = 0
-  security_groups = ["security-groups-id-123"]
-
-  clb_log_set_period           = 7
-  clb_log_topic_name           = "clb_topic"
+  security_groups = ["your_security_group_id"]
 
   clb_listeners = [
     {
-      listener_name                = "http_listener"
-      protocol                     = "HTTP"
-      port                         = 80
-
-      listener_domain            = "foo.net"
-      listener_url               = "/index"
-      clb_health_check             = {
-        health_check_switch        = true
-        health_check_interval_time = 100
-        health_check_health_num    = 2
-        health_check_unhealth_num  = 3
-        health_check_http_code     = 2
-        health_check_http_method   = "GET"
-      }
-      session_expire_time        = 30
+      listener_name       = "tcp_listener"
+      protocol            = "TCP"
+      port                = 66
+      session_expire_time = 30
     },
     {
-      listener_name                = "http_listener2"
-      protocol                     = "HTTP"
-      port                         = 440
-      listener_domain              = "foo2.net"
-      listener_url                 = "/index"
-      clb_health_check             = {
-        health_check_switch        = true
-        health_check_interval_time = 5
-        health_check_health_num    = 4
-        health_check_unhealth_num  = 4
-        health_check_http_code     = null
-        health_check_http_method   = null
-      }
-      session_expire_time        = 30
+      listener_name = "http_listener"
+      protocol      = "HTTP"
+      port          = 80
+    },
+    {
+      listener_name        = "https_listener"
+      protocol             = "HTTPS"
+      port                 = 443
+      certificate_ssl_mode = "UNIDIRECTIONAL"
+      certificate_id       = "your_certificate_id"
+    },
+    {
+      listener_name        = "tcp_ssl_listener"
+      protocol             = "TCP_SSL"
+      port                 = 67
+      certificate_ssl_mode = "UNIDIRECTIONAL"
+      certificate_id       = "your_certificate_id"
     }
   ]
+
   clb_tags = {
     test = "tf-clb-module"
   }
@@ -94,11 +68,120 @@ module "clb-instance" {
 
 ```
 
+### CLB Module Listener Redirection
 
+```hcl
+module "clb-instance-listener-redirection" {
+  source = "terraform-tencentcloud-modules/clb/tencentcloud"
+
+  network_type            = "OPEN"
+  clb_name                = "tf-clb-module-listener-redirection"
+  vpc_id                  = "your_vpc_id"
+  project_id              = 0
+  security_groups         = ["your_security_group_id"]
+  create_listener_rules   = true
+  create_clb_redirections = true
+
+  clb_listeners = [
+    {
+      listener_name = "http_listener1"
+      protocol      = "HTTP"
+      port          = 80
+    },
+    {
+      listener_name = "http_listener2"
+      protocol      = "HTTP"
+      port          = 88
+    }
+  ]
+
+  clb_tags = {
+    test = "tf-clb-module"
+  }
+
+  clb_listener_rules = [
+    {
+      listener_index = 0
+      domain         = "foo.net"
+      url            = "/index"
+    },
+    {
+      listener_index = 0
+      domain         = "foo.net"
+      url            = "/index1"
+    },
+    {
+      listener_index = 1
+      domain         = "foo.net"
+      url            = "/index"
+    }
+  ]
+
+  clb_redirections = [
+    {
+      source_listener_rule_index = 0
+      target_listener_rule_index = 2
+    }
+  ]
+}
+
+```
+
+### CLB Instance With Log
+
+```hcl
+module "clb-instance-with-log" {
+  source = "terraform-tencentcloud-modules/clb/tencentcloud"
+
+  network_type       = "OPEN"
+  clb_name           = "tf-clb-module-with-log"
+  vpc_id             = "your_vpc_id"
+  project_id         = 0
+  security_groups    = ["your_security_group_id"]
+  create_clb_log     = true
+  clb_log_set_period = 7
+  clb_log_topic_name = "clb_topic"
+
+  clb_listeners = [
+    {
+      listener_name       = "tcp_listener"
+      protocol            = "TCP"
+      port                = 66
+      session_expire_time = 30
+    }
+  ]
+
+  clb_tags = {
+    test = "tf-clb-module"
+  }
+}
+
+```
 
 ## Conditional Creation
 
-This module can create clb instance.
+The following values are provided to toggle on/off creation of the associated resources as desired:
+
+```hcl
+module "clb" {
+  source = "terraform-tencentcloud-modules/clb/tencentcloud"
+
+  # Enable creation of listeners
+  create_listener = true
+  
+  # Enable creation of listener rules
+  create_listener_rules = true
+  
+  # Enable creation of redirections
+  create_clb_redirections = true
+
+  # Enable creation of clb_log_set & clb_log_topic
+  create_clb_log = true
+
+  # ... omitted
+}
+```
+
 
 ## Inputs
 
@@ -111,34 +194,30 @@ This module can create clb instance.
 | vpc_id                       | VPC id of the CLB.                                           |    string    |      null      |    no    |
 | subnet_id                    | Subnet id of the CLB. Effective only for CLB within the VPC. Only supports 'INTERNAL' CLBs. |    string    |      null      |    no    |
 | security_groups              | Security groups of the CLB instance. Only supports 'OPEN' CLBs. | list(string) |      null      |    no    |
-| load_balancer_pass_to_target | Whether the target allow flow come from clb. If value is true, only check security group of clb, or check both clb and backend instance security group. |     bool     |      true      |   Yes    |
-| target_region_info_region    | Region information of backend services are attached the CLB instance. Only supports OPEN CLBs. |    string    |       ""       |    No    |
-| clb_log_set_period           | Logset retention period in days. Maximun value is 90.        |    number    |       7        |    No    |
-| clb_log_topic_name           | Log topic of CLB instance./的房间都是                        |    string    |  "clb-topic"   |    No    |
-| clb_listeners                | The CLB listener list                                        | list(object) |       []       |    No    |
-| clb_health_check             | The configuration of CLB listener Health check               |    object    |       {}       |    No    |
-| session_expire_time          | Time of session persistence within the CLB listener. NOTES: Available when scheduler is specified as WRR, and not available when listener protocol is TCP_SSL. NOTES: TCP/UDP/TCP_SSL listener allows direct configuration, HTTP/HTTPS listener needs to be configured in tencentcloud_clb_listener_rule. |    number    |       30       |    No    |
-
-### clb_listeners
-
-| Name            | Description                                                  |  Type  |     Default     | Required |
-| --------------- | ------------------------------------------------------------ | :----: | :-------------: | :------: |
-| listener_name   | Name of the CLB listener, and available values can only be Chinese characters, English letters, numbers, underscore and hyphen '-'. | sting  | "test_listener" |    No    |
-| port            | Port of the CLB listener.                                    | number |       80        |    No    |
-| protocol        | Type of protocol within the listener. Valid values: TCP, UDP, HTTP, HTTPS and TCP_SSL. | string |      HTTP       |    No    |
-| listener_domain | Domain name of the listener rule.                            | string |      null       |   Yes    |
-| listener_url    | Url of the listener rule.                                    | string |      null       |   Yes    |
-
-### clb_health_check
-
-| Name                       | Description                                                  |  Type  | Default | Required |
-| -------------------------- | ------------------------------------------------------------ | :----: | :-----: | :------: |
-| health_check_switch        | Indicates whether health check is enabled.                   |  bool  |  true   |    No    |
-| health_check_interval_time | Interval time of health check. Valid value ranges: [5~300] sec. and the default is 5 sec. NOTES: TCP/UDP/TCP_SSL listener allows direct configuration, HTTP/HTTPS listener needs to be configured in tencentcloud_clb_listener_rule. | number |   100   |    No    |
-| health_check_health_num    | Health threshold of health check, and the default is 3. If a success result is returned for the health check for 3 consecutive times, the backend CVM is identified as healthy. The value range is 2-10. | number |    2    |    No    |
-| health_check_unhealth_num  | Unhealthy threshold of health check, and the default is 3. If a success result is returned for the health check 3 consecutive times, the CVM is identified as unhealthy. The value range is [2-10] | number |    2    |    No    |
-| health_check_http_code     | HTTP health check code of TCP listener. When the value of health_check_type of the health check protocol is HTTP, this field is required. Valid values: 1, 2, 4, 8, 16. 1 means http_1xx, 2 means http_2xx, 4 means http_3xx, 8 means http_4xx, 16 means http_5xx. | number |    2    |    No    |
-| health_check_http_method   | HTTP health check method of TCP listener. Valid values: HEAD, GET. | string |  "GET"  |    No    |
+| create_clb_log               | Whether to create clb log.  Priority is lower than log_set_id and log_topic_id. |     bool     |      false      |   no    |
+| clb_log_set_period           | Logset retention period in days. Maximun value is 90.        |    number    |       7        |    no    |
+| clb_log_topic_name           | Log topic of CLB instance.                       |    string    |  "clb-topic"   |    no    |
+| log_set_id                   | The id of log set.                               |    string    |  "" | no
+| log_topic_id                 | The id of log topic.                             |    string    |  "" | no   |
+| address_ip_version           | IP version, only applicable to open CLB. Valid values are ipv4, ipv6 and IPv6FullChain. |  string |  null  | no |
+| bandwidth_package_id         | Bandwidth package id. If set, the internet_charge_type must be BANDWIDTH_PACKAGE. |  string  |  null |  no  |
+| internet_bandwidth_max_out   | Max bandwidth out, only applicable to open CLB. Valid value ranges is [1, 2048]. Unit is MB. |  number  |  null  |  no  |
+| internet_charge_type         | Internet charge type, only applicable to open CLB. Valid values are TRAFFIC_POSTPAID_BY_HOUR, BANDWIDTH_POSTPAID_BY_HOUR and BANDWIDTH_PACKAGE. |  string  |  null  |  no  |
+| load_balancer_pass_to_target | Whether the target allow flow come from clb. If value is true, only check security group of clb, or check both clb and backend instance security group. |     bool     |      null      |   Yes    |
+| master_zone_id               | Setting master zone id of cross available zone disaster recovery, only applicable to open CLB. |  string  |  null  |  no  |
+| slave_zone_id                | Setting slave zone id of cross available zone disaster recovery, only applicable to open CLB. this zone will undertake traffic when the master is down. |  string  |  null  |  no  |
+| snat_ips                     | Snat Ip List, required with snat_pro=true. NOTE: This argument cannot be read and modified here because dynamic ip is untraceable, please import resource tencentcloud_clb_snat_ip to handle fixed ips. |  list(map(string))  |  []  |  no  |
+| snat_pro                     | Indicates whether Binding IPs of other VPCs feature switch.  |  bool  |  null  |  no  |
+| tags                         | The available tags within this CLB.  |  map(any)  |  null  |  no  |
+| target_region_info_region    | Region information of backend services are attached the CLB instance. Only supports OPEN CLBs. |    string    |       ""       |    no    |
+| target_region_info_vpc_id    | Vpc information of backend services are attached the CLB instance. Only supports OPEN CLBs.  |  string  |  null  |  no  |
+| zone_id                      | Available zone id, only applicable to open CLB.  |  string  |  null  |  no  |
+| create_listener              | Whether to create a CLB Listeners. | bool |  true  |  no  |
+| clb_listeners                | The CLB Listener config list. Valid values reference [clb_listener](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/clb_listener#argument-reference). | list(map(string)) |       []       |    no    |
+| create_listener_rules        | Whether to create a CLB Listener rules. |  bool  |   false   |  no  |
+| clb_listener_rules           | The CLB listener rule config list. The index of the clb_listeners parameter is matched by the listener_index. For other valid values reference [clb_listener_rule](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/clb_listener_rule#argument-reference) |  list(map(string))  |  []  |  no  |
+| create_clb_redirections      | Whether to create a CLB Listener rules redirection.  |  bool  |  false  |  no  |
+| clb_redirections             | The CLB redirection config list. Use source_listener_rule_index/target_listener_rule_index to get source_listener_id/target_listener_id in clb_listener_rules，For other valid values reference [clb_redirection](https://registry.terraform.io/providers/tencentcloudstack/tencentcloud/latest/docs/resources/clb_redirection#argument-reference) |  list(map(string))  |  []  |  no  |
 
 ## Outputs
 
@@ -150,6 +229,7 @@ This module can create clb instance.
 | status_time      | Latest state transition time of CLB.          |
 | create_time      | Creation time of the CLB.                     |
 | network_type     | Types of CLB.                                 |
+| vip_isp          | Network operator, only applicable to open CLB.|
 | clb_vips         | The virtual service address table of the CLB. |
 | vpc_id           | Id of the VPC.                                |
 | subnet_id        | Id of the subnet.                             |
@@ -157,7 +237,9 @@ This module can create clb instance.
 | tags             | The available tags within this CLB.           |
 | clb_listener_id  | ID of the CLB_listener.                       |
 | clb_log_set_id   | The id of log set.                            |
-| clb_log_topic_id | "The id of log topic."                        |
+| clb_log_topic_id | The id of log topic.                          |
+| clb_listener_rule_id | ID of the listener rule.                  |
+| clb_redirection_id   | ID of the clb redirection.                |         
 
 
 ## Authors

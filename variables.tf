@@ -41,6 +41,12 @@ variable "security_groups" {
   default     = null
 }
 
+variable "create_clb_log" {
+  description = "Whether to create clb log"
+  type        = bool
+  default     = false
+}
+
 variable "clb_log_set_period" {
   type        = number
   default     = 7
@@ -65,6 +71,84 @@ variable "log_topic_id" {
   description = "The id of log topic."
 }
 
+variable "address_ip_version" {
+  description = "IP version, only applicable to open CLB. Valid values are ipv4, ipv6 and IPv6FullChain."
+  type        = string
+  default     = null
+}
+
+variable "bandwidth_package_id" {
+  description = "Bandwidth package id. If set, the internet_charge_type must be BANDWIDTH_PACKAGE."
+  type        = string
+  default     = null
+}
+
+variable "internet_bandwidth_max_out" {
+  description = "Max bandwidth out, only applicable to open CLB. Valid value ranges is [1, 2048]. Unit is MB."
+  type        = number
+  default     = null
+}
+
+variable "internet_charge_type" {
+  description = "Internet charge type, only applicable to open CLB. Valid values are TRAFFIC_POSTPAID_BY_HOUR, BANDWIDTH_POSTPAID_BY_HOUR and BANDWIDTH_PACKAGE."
+  type        = string
+  default     = null
+}
+
+variable "load_balancer_pass_to_target" {
+  description = "Whether the target allow flow come from clb. If value is true, only check security group of clb, or check both clb and backend instance security group."
+  type        = bool
+  default     = null
+}
+
+variable "master_zone_id" {
+  description = "Setting master zone id of cross available zone disaster recovery, only applicable to open CLB."
+  type        = string
+  default     = null
+}
+
+variable "slave_zone_id" {
+  description = "Setting slave zone id of cross available zone disaster recovery, only applicable to open CLB. this zone will undertake traffic when the master is down."
+  type        = string
+  default     = null
+}
+
+variable "snat_ips" {
+  description = "Snat Ip List, required with snat_pro=true. NOTE: This argument cannot be read and modified here because dynamic ip is untraceable, please import resource tencentcloud_clb_snat_ip to handle fixed ips."
+  type        = list(map(string))
+  default     = []
+}
+
+variable "snat_pro" {
+  description = "Indicates whether Binding IPs of other VPCs feature switch."
+  type        = bool
+  default     = null
+}
+
+variable "tags" {
+  description = "The available tags within this CLB."
+  type        = map(any)
+  default     = null
+}
+
+variable "target_region_info_region" {
+  description = "Region information of backend services are attached the CLB instance. Only supports OPEN CLBs."
+  type        = string
+  default     = null
+}
+
+variable "target_region_info_vpc_id" {
+  description = "Vpc information of backend services are attached the CLB instance. Only supports OPEN CLBs."
+  type        = string
+  default     = null
+}
+
+variable "zone_id" {
+  description = "Available zone id, only applicable to open CLB."
+  type        = string
+  default     = null
+}
+
 variable "create_listener" {
   type        = bool
   default     = true
@@ -72,25 +156,31 @@ variable "create_listener" {
 }
 
 variable "clb_listeners" {
-  type        = list(object({
-    listener_name = string
-    port          = number
-    protocol      = string
-    listener_domain = string
-    listener_url    = string
-    clb_health_check = object({
-      health_check_switch        = bool
-      health_check_interval_time = number
-      health_check_health_num    = number
-      health_check_unhealth_num  = number
-
-      health_check_http_code     = number
-      health_check_http_method   = string
-    })
-    session_expire_time        = number
-  }))
-  default     = []
   description = "The CLB Listener config list."
+  type        = list(map(string))
+  default     = []
 }
 
+variable "create_listener_rules" {
+  type        = bool
+  default     = false
+  description = "Whether to create a CLB Listener rules."
+}
 
+variable "clb_listener_rules" {
+  description = "The CLB listener rule config list."
+  type        = list(map(string))
+  default     = []
+}
+
+variable "create_clb_redirections" {
+  type        = bool
+  default     = false
+  description = "Whether to create a CLB Listener rules redirection."
+}
+
+variable "clb_redirections" {
+  description = "The CLB redirection config list."
+  type        = list(map(string))
+  default     = []
+}
