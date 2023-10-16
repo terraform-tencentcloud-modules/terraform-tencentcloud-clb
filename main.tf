@@ -37,6 +37,11 @@ resource "tencentcloud_clb_instance" "this" {
   target_region_info_region = var.target_region_info_region
   target_region_info_vpc_id = var.target_region_info_vpc_id
   zone_id                   = var.zone_id
+
+  ignore_changes = [
+    // tke-clusterId is a preserved tag used by TKE for service attaching CLBs
+    tags["tke-clusterId"],
+  ]
 }
 
 data "tencentcloud_clb_instances" "this" {
