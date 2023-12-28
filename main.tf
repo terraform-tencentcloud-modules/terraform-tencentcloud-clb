@@ -15,6 +15,7 @@ resource "tencentcloud_clb_instance" "this" {
   vpc_id          = var.vpc_id == null ? 0 : var.vpc_id
   subnet_id       = var.vpc_id != null ? var.subnet_id : null
   security_groups = var.security_groups
+  dynamic_vip = var.network_type == "OPEN"? var.dynamic_vip : null
 
   log_set_id   = local.log_set_id
   log_topic_id = local.log_topic_id

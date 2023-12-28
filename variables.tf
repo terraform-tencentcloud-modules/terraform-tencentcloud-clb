@@ -184,3 +184,8 @@ variable "clb_redirections" {
   type        = list(map(string))
   default     = []
 }
+
+variable "dynamic_vip" {
+  type = bool
+  default = true
+}
