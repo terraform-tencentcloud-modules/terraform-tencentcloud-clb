@@ -35,7 +35,7 @@ output "clb_vips" {
 
 output "clb_domain" {
   description = "Domain name of the CLB instance."
-  value       = length(local.this_clb_info) > 0 ? local.this_clb_info[0].domain : []
+  value       = tencentcloud_clb_instance.this.domain
 }
 
 output "vip_isp" {
