@@ -15,6 +15,8 @@ resource "tencentcloud_clb_instance" "this" {
   vpc_id          = var.vpc_id == null ? 0 : var.vpc_id
   subnet_id       = var.vpc_id != null ? var.subnet_id : null
   security_groups = var.security_groups
+  dynamic_vip = var.network_type == "OPEN"? var.dynamic_vip : null
+  sla_type = var.sla_type
 
   log_set_id   = local.log_set_id
   log_topic_id = local.log_topic_id
@@ -37,6 +39,13 @@ resource "tencentcloud_clb_instance" "this" {
   target_region_info_region = var.target_region_info_region
   target_region_info_vpc_id = var.target_region_info_vpc_id
   zone_id                   = var.zone_id
+
+  lifecycle {
+    ignore_changes = [
+      // tke-clusterId is a preserved tag used by TKE for service attaching CLBs
+      tags["tke-clusterId"],
+    ]
+  }
 }
 
 data "tencentcloud_clb_instances" "this" {
