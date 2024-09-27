@@ -33,6 +33,11 @@ output "clb_vips" {
   value       = length(local.this_clb_info) > 0 ? local.this_clb_info[0].clb_vips : []
 }
 
+output "clb_domain" {
+  description = "Domain name of the CLB instance."
+  value       = tencentcloud_clb_instance.this.domain
+}
+
 output "vip_isp" {
   description = "Network operator, only applicable to open CLB."
   value = length(local.this_clb_info) > 0 ? local.this_clb_info[0].vip_isp : ""
