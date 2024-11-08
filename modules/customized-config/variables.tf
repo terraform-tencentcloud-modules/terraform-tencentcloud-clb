@@ -1,7 +1,3 @@
-variable "region" {
-  type    = string
-  default = "ap-jakarta"
-}
 
 variable "create" {
   type =bool

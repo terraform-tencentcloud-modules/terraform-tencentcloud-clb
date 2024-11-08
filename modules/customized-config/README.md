@@ -61,7 +61,6 @@ No modules.
 | <a name="input_config_name"></a> [config\_name](#input\_config\_name) | Name of Customized Config. | `string` | `""` | no |
 | <a name="input_create"></a> [create](#input\_create) | create or not | `bool` | `true` | no |
 | <a name="input_load_balancer_ids"></a> [load\_balancer\_ids](#input\_load\_balancer\_ids) | clb ids to bind this config | `list(string)` | `null` | no |
-| <a name="input_region"></a> [region](#input\_region) | n/a | `string` | `"ap-jakarta"` | no |
 
 ## Outputs
 
