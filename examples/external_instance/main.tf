@@ -1,6 +1,6 @@
 
 
-module "internal-clb-instance" {
+module "external-clb-instance" {
   source = "../../"
 
   network_type    = "OPEN"
@@ -8,8 +8,6 @@ module "internal-clb-instance" {
   vpc_id          = module.vpc.vpc_id
   project_id      = 0
   security_groups = []
-
-#  vip = "10.0.0.9"
 
 }
 
