@@ -7,6 +7,7 @@ locals {
   rule_resources     = tencentcloud_clb_listener_rule.listener_rule
 }
 
+
 resource "tencentcloud_clb_instance" "this" {
   project_id      = var.project_id
   clb_name        = var.clb_name
@@ -28,6 +29,7 @@ resource "tencentcloud_clb_instance" "this" {
   load_balancer_pass_to_target = var.load_balancer_pass_to_target
   master_zone_id               = var.master_zone_id
   slave_zone_id                = var.slave_zone_id
+  vip = var.network_type == "OPEN" ? null : var.vip
   dynamic "snat_ips" {
     for_each = var.snat_ips
     content {
