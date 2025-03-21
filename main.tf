@@ -50,6 +50,12 @@ resource "tencentcloud_clb_instance" "this" {
   }
 }
 
+resource "tencentcloud_clb_instance_sla_config" "instance_sla_config" {
+  count = var.sla_type == null || var.sla_type == "" ? 0 : 1
+  load_balancer_id = local.clb_id
+  sla_type         = var.sla_type
+}
+
 data "tencentcloud_clb_instances" "this" {
   clb_id = local.clb_id
 }
