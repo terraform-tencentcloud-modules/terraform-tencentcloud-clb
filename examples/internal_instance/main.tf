@@ -11,6 +11,7 @@ module "internal-clb-instance" {
   security_groups = []
 
   vip = "10.0.0.9"
+  sla_type = "clb.c2.medium"
 
 }
 
@@ -24,7 +25,7 @@ module "vpc" {
 
   subnet_name  = "clb-vpc"
   subnet_cidrs = ["10.0.0.0/24"]
-  availability_zones = ["ap-jakarta-1"]
+  availability_zones = ["ap-singapore-1"]
   subnet_is_multicast = false
 
 }
